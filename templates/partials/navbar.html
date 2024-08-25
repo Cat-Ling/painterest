@@ -1,0 +1,77 @@
+<nav class="flex flex-row flex-wrap gap-2 text-center justify-center items-center pb-3">
+  <a
+    href="/"
+    class="text-main-background text-3xl font-playful font-extrabold pointer-events-auto bg-accent pl-4 pr-5 py-1 rounded-full"
+    >P</a
+  >
+  <form action="/search/pins" method="GET">
+    <fieldset class="flex flex-row gap-3 group items-center justify-center max-w-5 w-fit">
+      <label
+        class="flex flex-row items-center justify-between bg-[var(--colors-navbar-bg-alt)] shadow-md px-4 py-3 rounded-full"
+      >
+        <button type="submit">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-5 [&>path]:stroke-[4] text-foreground-alt mr-2"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+        <input
+          autocomplete="off"
+          class="peer inline-block bg-transparent text-main-foreground placeholder:text-foreground-alt focus:outline-none text-sm placeholder:text-sm"
+          type="search"
+          name="q"
+          placeholder="Search for pins"
+          tabindex="0"
+          required
+          value="{{ query }}"
+          id="search-bar"
+        />
+        <button class="peer-invalid:hidden" type="reset" tabindex="0" value="">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-5 text-foreground-alt"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+        </button>
+      </label>
+    </fieldset>
+  </form>
+  {% if bookmark and bookmark != 'null' %}
+  <a
+    id="search-next-page"
+    href="/search/pins?q={{ query | urlencode }}&bookmarks={{ bookmark | urlencode }}&csrftoken={{ csrftoken | urlencode }}"
+    class="bg-accent px-4 py-3 rounded-full text-[var(--colors-black)] flex flex-row gap-2 items-center justify-center"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="size-5"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+      />
+    </svg>
+    Next page
+  </a>
+  {% endif %}
+</nav>

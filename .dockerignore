@@ -1,0 +1,6 @@
+*
+!requirements.lock
+!src/
+!templates/
+!static/
+!tailwind.config.js

@@ -1,0 +1,28 @@
+# project
+.idea/
+.vscode/
+.venv/
+.tests/
+.env
+
+# cache
+__pycache__/
+*.py[cod]
+.cache/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage/
+static/css/tailwind.css
+
+# build
+env/
+build/
+_build/
+dist/
+site/
+*.egg-info/
+*.egg
+
+# test data
+data/

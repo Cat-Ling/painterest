@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %} {{ query }} - Painterest {% endblock %}
+{% block content %}
+<ol id="pin-list" class="list-none columns-1 md:columns-4 lg:columns-6 gap-6">
+  {% for item in results %}
+  <li class="break-inside-avoid mb-6 flex flex-col items-center justify-center gap-2">
+    <a href="{{ item.pin_url }}">
+      <img
+        src="{{ item.thumbnail or item.image }}"
+        class="rounded-xl w-64"
+        alt="{{ item.title or 'Pin Image' }}"
+      />
+    </a>
+    <div class="w-0 min-w-full text-left text-sm">
+      {% if item.title %}
+      <a href="{{ item.pin_url }}">
+        <strong class="line-clamp-2 my-1">{{ item.title }}</strong>
+      </a>
+      {% endif %}
+      {% if item.pinner.name or item.pinner.username %}
+      <div class="flex flex-row items-center gap-2">
+        <img src="{{ item.pinner.image }}" class="w-8 rounded-full" alt="Pinner Avatar" />
+        <span class="line-clamp-1">{{ item.pinner.name or "@" + item.pinner.username }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ol>
+{% if bookmark and bookmark != "null" %}
+<a
+  id="search-next-page"
+  href="/search/pins?q={{query}}&bookmarks={{bookmark}}&csrftoken={{csrftoken}}"
+  class="hidden"
+></a>
+{% endif %}
+<script>
+  let bookmark = "{{ bookmark }}";
+  const pinList = document.getElementById("pin-list");
+  const reqs = new Set();
+
+  async function loadMorePins() {
+    if (!bookmark || bookmark === "null") return;
+
+    const nextPageLink = document.getElementById("search-next-page");
+    if (!nextPageLink) return;
+
+    const url = new URL(nextPageLink.href);
+    url.pathname += ".json";
+
+    if (reqs.has(url.toString())) return;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+
+      bookmark = data.bookmark || "null";
+      data.results.forEach((item) => {
+        const li = document.createElement("li");
+        li.className = "break-inside-avoid mb-6 flex flex-col items-center justify-center gap-2";
+        li.innerHTML = `
+                    <a href="${item.pin_url}">
+                        <img src="${item.thumbnail || item.image}" class="rounded-xl w-64" alt="">
+                    </a>
+                    <div class="w-0 min-w-full text-left text-sm">
+                        ${item.title ? `<a href="${item.pin_url}"><strong class="line-clamp-2 my-1">${item.title}</strong></a>` : ""}
+                        ${
+                          item.pinner.name || item.pinner.username
+                            ? `
+                            <div class="flex flex-row items-center gap-2">
+                                <img src="${item.pinner.image}" class="w-8 rounded-full" alt="">
+                                <span class="line-clamp-1">${item.pinner.name || "@" + item.pinner.username}</span>
+                            </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                `;
+        pinList.appendChild(li);
+      });
+
+      reqs.add(url.toString());
+
+      // update the href of the next page link with the new bookmark
+      if (bookmark !== "null") {
+        nextPageLink.href = `${window.location.pathname}?q=${encodeURIComponent("{{ query }}")}&bookmarks=${encodeURIComponent(bookmark)}&csrftoken=${encodeURIComponent("{{ csrftoken }}")}`;
+      } else {
+        nextPageLink.remove(); // no more pages to load
+      }
+    } catch (error) {
+      console.error("Failed to load more pins:", error);
+    }
+  }
+
+  function handleScroll() {
+    if (
+      window.innerHeight + document.documentElement.scrollTop ===
+      document.documentElement.offsetHeight
+    ) {
+      loadMorePins();
+    }
+  }
+
+  window.addEventListener("scroll", handleScroll);
+
+  window.addEventListener("beforeunload", () => {
+    window.removeEventListener("scroll", handleScroll);
+  });
+</script>
+{% endblock %}

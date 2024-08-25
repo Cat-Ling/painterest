@@ -1,0 +1,87 @@
+[project]
+name = "painterest"
+version = "0.1.0"
+description = "Privacy-respecting, anonymous, NoJS-supporting Pinterest frontend."
+license = "AGPL-3.0-or-later"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Zubarev Grigoriy", email = "thirtysix@thirtysix.pw" }
+]
+dependencies = [
+    "fastapi>=0.112.1",
+    "uvicorn[standard]>=0.30.6",
+    "jinja2>=3.1.4",
+    "aiohttp>=3.10.5",
+    "selectolax>=0.3.21",
+    "fastapi-tailwind>=1.0.1a2",
+    "async-lru>=2.0.4",
+]
+
+[tool.rye]
+virtual = true
+managed = true
+universal = true
+dev-dependencies = [
+    "basedpyright>=1.17.0",
+]
+
+[tool.rye.scripts]
+dev = """uvicorn src.main:app --reload --reload-include 'src/**/*.py'
+--reload-include 'templates/**/*.html' --reload-include 'static/**/*.css' --port 8889"""
+start = """uvicorn src.main:app --no-access-log --proxy-headers
+--forwarded-allow-ips '*' --host 0.0.0.0 --port 8889"""
+
+[tool.ruff]
+target-version = "py312"
+line-length = 99
+exclude = [
+    ".git",
+    ".venv",
+    ".idea",
+    ".tests",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "N", # pep8-naming
+    "S", # flake8-bandit
+    "B", # flake8-bugbear
+    "G", # flake8-logging-format
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+    "PLC", # pylint conventions
+    "PLE", # pylint errors
+    "SIM", # flake8-simplify
+    "RET", # flake8-return
+    "YTT", # flake8-2020
+    "RUF", # ruff-specific rules
+    "TCH", # flake8-type-checking
+    "PTH", # flake8-use-pathlib
+    "ASYNC", # flake8-async
+]
+ignore = [
+    "E501",
+    "S105",
+]
+
+[tool.basedpyright]
+exclude = [
+    ".git",
+    ".venv",
+    ".idea",
+    ".tests",
+    "build",
+    "dist",
+]
+typeCheckingMode = "standard"
+pythonPlatform = "All"
+pythonVersion = "3.12"
+reportMissingImports = true
+reportMissingTypeStubs = false

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col md:flex-row w-full max-w-3xl">
+  <div class="flex-shrink-0 w-full md:w-1/2">
+    <img
+      src="{{pin.image}}"
+      alt="{{pin.title or 'Pin Image'}}"
+      class="object-cover w-full h-auto rounded-lg"
+    />
+  </div>
+
+  <div class="flex-grow md:w-1/2 pl-4 content-center">
+    {% if pin.title %}
+    <h2 class="text-2xl font-bold mb-1">{{ pin.title }}</h2>
+    {% endif %}
+    {% if pin.description %}
+    <p class="mb-2">{{ pin.description }}</p>
+    {% endif %}
+    {% if pin.creator %}
+    <div class="flex items-center mb-4">
+      <img src="{{pin.creator.image}}" alt="Creator Avatar" class="w-12 h-12 rounded-full mr-2" />
+      <div>
+        <p class="font-semibold">{{ pin.creator.name }}</p>
+        <p class="text-gray-400 text-sm mb-1.5">
+          {% if pin.creator.followers > 0 %} {{ pin.creator.followers }} {% else %} no {% endif %}
+          subscribers
+        </p>
+      </div>
+    </div>
+    {% endif %}
+    {% if pin.tags %}
+    <div class="flex flex-wrap gap-2 mb-4">
+      {% for tag in pin.tags %}
+      <span class="bg-gray-700 text-white py-1 px-3 rounded-full text-sm">
+        <span>{{ tag }}</span>
+      </span>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if pin.source %}
+    <div class="flex items-center mb-4">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="size-5"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+        />
+      </svg>
+      <div class="mb-[0.5]">
+        <span class="ml-1">
+          Source:
+          <a
+            href="{{ pin.url }}"
+            target="_blank"
+            class="text-[var(--colors-accent)] underline font-semibold"
+          >
+            {{ pin.source }}
+          </a>
+        </span>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
