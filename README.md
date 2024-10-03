@@ -1,6 +1,11 @@
 # 🩸 Painterest
 
 Privacy-respecting, anonymous, NoJS-supporting Pinterest frontend.
+Based on [disinterest](https://codeberg.org/ayuxia/disinterest).
+
+## 🌐 Instances
+
+See [instances.json](instances.json) file.
 
 ## ✨ Features
 

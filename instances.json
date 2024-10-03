@@ -1,0 +1,20 @@
+[
+    {
+        "clearnet": "https://pain.thirtysix.pw",
+        "tor": null,
+        "i2p": null,
+        "country": "NL",
+        "cdn": false,
+        "owner_name": "thirtysix",
+        "owner_website": "https://thirtysix.pw"
+    },
+    {
+        "clearnet": "https://pt.bloat.cat",
+        "tor": null,
+        "i2p": null,
+        "country": "DE",
+        "cdn": false,
+        "owner_name": "bloatcat",
+        "owner_website": "https://bloat.cat"
+    }
+]
