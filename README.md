@@ -11,7 +11,7 @@ Privacy-respecting, anonymous, NoJS-supporting Pinterest frontend.
     - [ ] Comments
   - [x] Image proxy
   - [ ] Search by tags
-  
+
 - [ ] Frontend
   - [ ] Homepage
   - [x] Search (NoJS)
@@ -62,6 +62,10 @@ location / {
     proxy_set_header X-Forwarded-Proto $scheme;
 }
 ```
+
+## 📄 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) file.
 
 ## 🔧 Development
 
