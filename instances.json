@@ -16,14 +16,5 @@
         "cdn": false,
         "owner_name": "bloatcat",
         "owner_website": "https://bloat.cat"
-    },
-    {
-        "clearnet": "https://painterest.gitro.xyz",
-        "tor": null,
-        "i2p": null,
-        "country": "DE",
-        "cdn": false,
-        "owner_name": "gitro",
-        "owner_website": "https://gitro.xyz"
     }
 ]
