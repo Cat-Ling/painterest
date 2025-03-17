@@ -38,9 +38,9 @@ async def search(
     if bookmarks and bookmarks != "null":
         query_data["options"]["bookmarks"] = [bookmarks]  # pyright: ignore [reportArgumentType]
 
-    headers = {}
+    headers = {"x-pinterest-pws-handler": "www/search/[scope].js"}
     if token and token != "null":
-        headers = {"csrftoken": token, "cookie": f"cookie:csrftoken={token}"}
+        headers |= {"csrftoken": token, "cookie": f"cookie:csrftoken={token}"}
 
     url = f"https://www.pinterest.com/resource/BaseSearchResource/get?data={quote(json.dumps(query_data))}"
 
