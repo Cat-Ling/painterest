@@ -16,5 +16,15 @@
         "cdn": false,
         "owner_name": "bloatcat",
         "owner_website": "https://bloat.cat"
+    },
+    {
+        "clearnet": "https://pin.dc09.ru",
+        "tor": null,
+        "i2p": null,
+        "country": "RU",
+        "cdn": false,
+        "owner_name": "DarkCat09",
+        "owner_website": "https://dc09.ru"
     }
+
 ]
