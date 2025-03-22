@@ -1,4 +1,5 @@
 import io
+import os
 from contextlib import asynccontextmanager
 from urllib.parse import urlparse
 
@@ -7,7 +8,6 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi_tailwind import tailwind
 
 from src.api.pin import Pin, get_pin
 from src.api.search import SearchResults, search
@@ -16,11 +16,19 @@ from src.api.search import SearchResults, search
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     global session
-    compile_tailwind = tailwind.compile(f"{static_files.directory}/css/tailwind.css", minify=True)
+
+    development = os.environ.get("DEV")
+    if development:
+        from fastapi_tailwind import tailwind
+
+        compile_tailwind = tailwind.compile(
+            f"{static_files.directory}/css/tailwind.css", minify=True
+        )
     session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(10))
     yield
     await session.close()
-    compile_tailwind.terminate()
+    if development:
+        compile_tailwind.terminate()  # pyright: ignore[reportPossiblyUnboundVariable]
 
 
 static_files = StaticFiles(directory="static")
@@ -101,7 +109,7 @@ async def image_proxy(url: str = Query(...)):
         if response.status != 200:
             raise HTTPException(status_code=404, detail=f"Failed to fetch url: {url}")
 
-        content_type = f'image/{"png" if url.endswith(".png") else "jpeg"}'
+        content_type = f"image/{'png' if url.endswith('.png') else 'jpeg'}"
         image_data = await response.read()
 
     return StreamingResponse(io.BytesIO(image_data), media_type=content_type)

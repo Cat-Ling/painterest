@@ -1,6 +1,8 @@
 *
-!requirements.lock
+!pyproject.toml
+!uv.lock
 !src/
 !templates/
 !static/
 !tailwind.config.js
+static/css/tailwind.css
