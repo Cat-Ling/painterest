@@ -2,7 +2,7 @@ import defaultTheme from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./{templates,static}/**/*.{html,vue,css}"],
+  content: ["./{templates,static}/**/*.{html,css}"],
   theme: {
     fontFamily: {
       sans: ["Work Sans", ...defaultTheme.fontFamily.sans],

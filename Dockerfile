@@ -17,18 +17,21 @@ SHELL ["sh", "-exc"]
 # Install Tailwind CSS CLI
 RUN <<EOT
 apt-get update -qy
-apt-get install -qyy --no-install-recommends --no-install-suggests curl ca-certificates
+apt-get install -qyy --no-install-recommends curl ca-certificates
 apt-get clean
 rm -rf /var/lib/apt/lists/*
-curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 \
-    -o /usr/bin/tailwindcss
-chmod +x /usr/bin/tailwindcss
+EOT
+RUN <<EOT
+curl -sL https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.13/tailwindcss-linux-x64 \
+    -o /bin/tailwindcss
+chmod +x /bin/tailwindcss
 EOT
 
 # Copy Tailwind config and styles
 WORKDIR /styles
 COPY tailwind.config.js ./
-COPY static/css/ static/
+COPY templates templates
+COPY static/css static/css
 
 # Compile styles
 RUN tailwindcss -o tailwind.css --minify
