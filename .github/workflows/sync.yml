@@ -1,0 +1,24 @@
+name: Sync
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Cat-Ling/painterest.git painterest
+          cd painterest
+
+          git remote add codeberg https://codeberg.org/thirtysix/painterest.git || true
+          
+          git fetch codeberg --tags --prune
+          
+          git checkout main
+          git pull codeberg main --ff-only  # Fast-forward only, avoids merge conflicts
+
+          git push origin main
