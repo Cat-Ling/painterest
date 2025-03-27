@@ -1,0 +1,6 @@
+services:
+  painterest:
+    image: ghcr.io/cat-ling/painterest:latest
+    restart: always
+    expose:
+      - 8889
