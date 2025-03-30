@@ -15,6 +15,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get Tag
+        id: latest_release
+        run: |
+          latest_tag=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
+          echo "Latest release tag: $latest_tag"
+          echo "::set-output name=tag::$latest_tag"
+
       - name: Credentials
         uses: docker/login-action@v2
         with:
@@ -25,20 +32,11 @@ jobs:
       - name: Prepare Build
         uses: docker/setup-buildx-action@v2
 
-      - name: Get Tag
-        id: get_tag
-        run: |
-          # Fetch tags to ensure we have the latest
-          git fetch --tags
-          # Get the latest tag from the repository
-          latest_tag=$(git describe --tags --abbrev=0 || echo "0.0.0")
-          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
-
       - name: Build Image
         run: |
-          docker build -t ghcr.io/cat-ling/painterest:${{ env.latest_tag }} -t ghcr.io/cat-ling/painterest:latest .
-
+          docker build -t ghcr.io/cat-ling/painterest:latest -t ghcr.io/cat-ling/painterest:${{ steps.latest_release.outputs.tag }} .
+      
       - name: Push
         run: |
-          docker push ghcr.io/cat-ling/painterest:${{ env.latest_tag }}
           docker push ghcr.io/cat-ling/painterest:latest
+          docker push ghcr.io/cat-ling/painterest:${{ steps.latest_release.outputs.tag }}
