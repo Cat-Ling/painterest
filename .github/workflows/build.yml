@@ -28,8 +28,11 @@ jobs:
       - name: Get Tag
         id: get_tag
         run: |
-          TAG=$(git describe --tags --abbrev=0)
-          echo "latest_tag=$TAG" >> $GITHUB_ENV
+          # Fetch tags to ensure we have the latest
+          git fetch --tags
+          # Get the latest tag from the repository
+          latest_tag=$(git describe --tags --abbrev=0 || echo "0.0.0")
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
 
       - name: Build Image
         run: |
