@@ -56,6 +56,10 @@ jobs:
             git tag "$new_tag"
             git push origin "$new_tag"
             echo "New tag created: $new_tag"
+
+            curl -X POST -H "Authorization: token ${{ secrets.GH_PAT }}" \
+              -d '{"tag_name": "'"$new_tag"'", "name": "'"$new_tag"'", "body": "Release version '"$new_tag"'"}' \
+              https://api.github.com/repos/Cat-Ling/painterest/releases
           else
             echo "No relevant changes detected, skipping versioning."
 
