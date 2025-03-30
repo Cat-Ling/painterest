@@ -13,12 +13,56 @@ jobs:
         run: |
           git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Cat-Ling/painterest.git painterest
           cd painterest
-
           git remote add codeberg https://codeberg.org/thirtysix/painterest.git || true
-          
           git fetch codeberg --tags --prune
-          
           git checkout main
-          git pull codeberg main --ff-only  # Fast-forward only, avoids merge conflicts
+          git pull codeberg main --ff-only
 
-          git push origin main
+      - name: Add exclusions
+        run: |
+          git diff --exit-code -- . ':!docker-compose.yml' ':!.github/*' || echo "Changes detected"
+
+      - name: Tag
+        run: |
+          changes=$(git diff --name-only -- . ':!docker-compose.yml' ':!.github/*')
+          if [[ -n "$changes" ]]; then
+            latest_tag=$(git describe --tags --abbrev=0 || echo "0.0.0")
+            if [[ ! "$latest_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              all_tags=$(git tag -l | sort -V)
+              if [[ -z "$all_tags" ]]; then
+                latest_tag="0.0.0"
+              else
+                for tag in $all_tags; do
+                  if [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                    latest_tag="$tag"
+                    break
+                  fi
+                done
+              fi
+            fi
+            IFS='.' read -r major minor patch <<< "$latest_tag"
+            if [ "$patch" -ge 9 ]; then
+              patch=0
+              if [ "$minor" -ge 9 ]; then
+                minor=0
+                major=$((major + 1))
+              else
+                minor=$((minor + 1))
+              fi
+            else
+              patch=$((patch + 1))
+            fi
+            new_tag="$major.$minor.$patch"
+            git tag "$new_tag"
+            git push origin "$new_tag"
+            echo "New tag created: $new_tag"
+          else
+            echo "No relevant changes detected, skipping versioning."
+
+      - name: Push
+        run: |
+          if [[ -n "$changes" ]]; then
+            git push origin main
+          else
+            echo "No relevant changes detected, skipping push."
+          fi
