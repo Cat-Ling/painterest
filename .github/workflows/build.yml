@@ -25,9 +25,17 @@ jobs:
       - name: Prepare Build
         uses: docker/setup-buildx-action@v2
 
+      - name: Get Tag
+        id: get_tag
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          echo "latest_tag=$TAG" >> $GITHUB_ENV
+
       - name: Build Image
         run: |
-          docker build -t ghcr.io/cat-ling/painterest:latest .
+          docker build -t ghcr.io/cat-ling/painterest:${{ env.latest_tag }} -t ghcr.io/cat-ling/painterest:latest .
+
       - name: Push
         run: |
+          docker push ghcr.io/cat-ling/painterest:${{ env.latest_tag }}
           docker push ghcr.io/cat-ling/painterest:latest
