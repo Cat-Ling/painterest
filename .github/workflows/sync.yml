@@ -18,14 +18,16 @@ jobs:
           git checkout main
           git pull codeberg main --ff-only
 
-      - name: Add exclusions
+      - name: Add Exclusions
         run: |
-          git diff --exit-code -- . ':!docker-compose.yml' ':!.github/*' || echo "Changes detected"
+          cd painterest
+          git update-index --skip-worktree .github/
+          git update-index --skip-worktree docker-compose.yml
 
       - name: Get Tag
         id: get_tag
         run: |
-          # Fetch the latest release tag from GitHub
+          cd painterest
           latest_release_tag=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name)
 
           if [ "$latest_release_tag" == "null" ]; then
@@ -34,35 +36,43 @@ jobs:
 
           echo "latest_tag=$latest_release_tag" >> $GITHUB_ENV
 
-      - name: Tag
+      - name: Check
+        id: check_changes
         run: |
-          changes=$(git diff --name-only -- . ':!docker-compose.yml' ':!.github/*')
+          cd painterest
+          changes=$(git diff --name-only)
+          
           if [[ -n "$changes" ]]; then
-            IFS='.' read -r major minor patch <<< "${{ env.latest_tag }}"
-            
-            if [ "$patch" -ge 9 ]; then
-              patch=0
-              if [ "$minor" -ge 9 ]; then
-                minor=0
-                major=$((major + 1))
-              else
-                minor=$((minor + 1))
-              fi
-            else
-              patch=$((patch + 1))
-            fi
-
-            new_tag="$major.$minor.$patch"
-            git tag "$new_tag"
-            git push origin "$new_tag"
-            echo "New tag created: $new_tag"
+            echo "changes_detected=true" >> $GITHUB_ENV
           else
-            echo "No relevant changes detected, skipping versioning."
-
-      - name: Push
-        run: |
-          if [[ -n "$changes" ]]; then
-            git push origin main
-          else
-            echo "No relevant changes detected, skipping push."
+            echo "changes_detected=false" >> $GITHUB_ENV
           fi
+
+      - name: Tag
+        if: env.changes_detected == 'true'
+        run: |
+          cd painterest
+          IFS='.' read -r major minor patch <<< "${{ env.latest_tag }}"
+          
+          if [ "$patch" -ge 9 ]; then
+            patch=0
+            if [ "$minor" -ge 9 ]; then
+              minor=0
+              major=$((major + 1))
+            else
+              minor=$((minor + 1))
+            fi
+          else
+            patch=$((patch + 1))
+          fi
+
+          new_tag="$major.$minor.$patch"
+          git tag "$new_tag"
+          git push origin "$new_tag"
+          echo "New tag created: $new_tag"
+
+      - name: Push Changes
+        if: env.changes_detected == 'true'
+        run: |
+          cd painterest
+          git push origin main
